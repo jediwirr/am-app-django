@@ -1,6 +1,6 @@
 from django.shortcuts import render, HttpResponse
-from .models import Article
-from .serializers import ArticleSerializer, UserSerializer
+from .models import Article, ContactForm
+from .serializers import ArticleSerializer, UserSerializer, ContactFormSerializer
 from django.http import JsonResponse
 from rest_framework.parsers import JSONParser
 from rest_framework.decorators import api_view
@@ -26,6 +26,10 @@ class ArticleViewSet(viewsets.ModelViewSet):
 class UserViewset(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+class ContactFormViewset(viewsets.ModelViewSet):
+    queryset = ContactForm.objects.all()
+    serializer_class = ContactFormSerializer
 
 
 

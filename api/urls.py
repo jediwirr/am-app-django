@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import ArticleViewSet, UserViewset
+from .views import ArticleViewSet, UserViewset, ContactFormViewset
 from rest_framework.routers import DefaultRouter
 from rest_framework.authtoken import views
 
@@ -8,6 +8,7 @@ from rest_framework.authtoken import views
 router = DefaultRouter()
 router.register('articles', ArticleViewSet, basename="articles")
 router.register('users', UserViewset)
+router.register('emails', ContactFormViewset)
 
 urlpatterns = [
     path('api/', include(router.urls)),

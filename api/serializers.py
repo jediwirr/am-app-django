@@ -1,7 +1,8 @@
 from rest_framework import serializers
-from .models import Article
+from .models import Article, ContactForm
 from django.contrib.auth.models import User
 from rest_framework.authtoken.views import Token
+from django.core.mail import send_mail
 
 
 class ArticleSerializer(serializers.ModelSerializer):
@@ -13,7 +14,7 @@ class ArticleSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'password']
+        fields = ['id', 'username', 'password', 'email']
 
         extra_kwargs = {'password': {
             'write_only': True,
@@ -24,3 +25,8 @@ class UserSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**validated_data)
         Token.objects.create(user=user)
         return user
+
+class ContactFormSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ContactForm
+        fields = ['email', 'subject', 'message']
