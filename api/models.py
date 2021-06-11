@@ -1,8 +1,9 @@
 from django.db import models
 from django.core.mail import BadHeaderError, send_mail
 from django.http import HttpResponse, HttpResponseRedirect
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMessage, send_mail
 from django.core.mail import EmailMultiAlternatives
+from django.shortcuts import render, HttpResponse
 
 
 # Create your models here.
@@ -21,14 +22,6 @@ class ContactForm(models.Model):
     email = models.EmailField(max_length=100)
     subject = models.CharField(max_length=100)
     message = models.TextField()
-
-    send_mail(
-        subject,
-        message,
-        'almamater.gym@gmail.com',
-        [email],
-        fail_silently=False,
-    )
 
     def __str__(self):
         return self.subject

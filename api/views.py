@@ -11,6 +11,7 @@ from rest_framework import generics, mixins, viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.models import User
+from django.core.mail import EmailMessage, send_mail
 
 
 # Create your views here.
@@ -27,11 +28,49 @@ class UserViewset(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+'''
 class ContactFormViewset(viewsets.ModelViewSet):
     queryset = ContactForm.objects.all()
     serializer_class = ContactFormSerializer
 
+    def send_email(request):
+        if request.method == 'POST':
+            send_mail(
+                'anohai',
+                'igogo',
+                'andm1793@gmail.com',
+                ['andm1793@gmail.com'],
+                fail_silently=False,
+            )
+'''
 
+@api_view(['GET', 'POST'])
+def send_email(request):
+    
+    #get all articles
+
+    if request.method == 'GET':
+        forms = ContactForm.objects.all()
+        serializer = ContactFormSerializer(forms, many=True)
+        return Response(serializer.data)
+    
+    elif request.method == 'POST':
+        subject = request.POST.get('subject', '')
+        message = request.POST.get('message', '')
+        email = request.POST.get('email', '')
+        send_mail(
+            subject,
+            message,
+            'andm1793@gmail.com',
+            [email],
+            fail_silently=False,
+        )
+        serializer = ContactFormSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 
