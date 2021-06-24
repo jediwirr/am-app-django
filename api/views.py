@@ -1,9 +1,9 @@
 from django.shortcuts import render, HttpResponse
-from .models import Article, ContactForm
-from .serializers import ArticleSerializer, UserSerializer, ContactFormSerializer
+from .models import Article, ContactForm, Like
+from .serializers import ArticleSerializer, LikeSerializer, UserSerializer, ContactFormSerializer
 from django.http import JsonResponse
 from rest_framework.parsers import JSONParser
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import APIView
@@ -12,21 +12,67 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.models import User
 from django.core.mail import EmailMessage, send_mail
-
-
 # Create your views here.
 
 
-class ArticleViewSet(viewsets.ModelViewSet):
-    queryset = Article.objects.all()
-    serializer_class = ArticleSerializer
-    permission_classes = [IsAuthenticated]
-    authentication_classes = (TokenAuthentication,)
+# class ArticleViewSet(viewsets.ModelViewSet):
+#     queryset = Article.objects.all()
+#     serializer_class = ArticleSerializer
+    # permission_classes = [IsAuthenticated]
+    # authentication_classes = (TokenAuthentication,)
     
+
+@api_view(['GET', 'POST'])
+# @authentication_classes([TokenAuthentication])
+# @permission_classes([IsAuthenticated])
+def article_list(request):
+
+    if request.method == 'GET':
+        articles = Article.objects.all()
+        serializer = ArticleSerializer(articles, many=True)
+        return Response(serializer.data)
+    
+    elif request.method == 'POST':
+        serializer = ArticleSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def article_details(request, pk):
+    try:
+        article = Article.objects.get(pk=pk)
+
+    except Article.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = ArticleSerializer(article)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = ArticleSerializer(article, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        article.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class UserViewset(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+
+class LikeViewset(viewsets.ModelViewSet):
+    queryset = Like.objects.all()
+    serializer_class = LikeSerializer
 
 '''
 class ContactFormViewset(viewsets.ModelViewSet):
@@ -47,8 +93,6 @@ class ContactFormViewset(viewsets.ModelViewSet):
 @api_view(['GET', 'POST'])
 def send_email(request):
     
-    #get all articles
-
     if request.method == 'GET':
         forms = ContactForm.objects.all()
         serializer = ContactFormSerializer(forms, many=True)
@@ -146,52 +190,6 @@ class ArticleDetails(APIView):
 
     def delete(self, request, pk):
         article = self.get_object(pk)
-        article.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-'''
-
-
-'''
-
-@api_view(['GET', 'POST'])
-def article_list(request):
-
-    #get all articles
-
-    if request.method == 'GET':
-        articles = Article.objects.all()
-        serializer = ArticleSerializer(articles, many=True)
-        return Response(serializer.data)
-    
-    elif request.method == 'POST':
-        serializer = ArticleSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['GET', 'PUT', 'DELETE'])
-def article_details(request, pk):
-    try:
-        article = Article.objects.get(pk=pk)
-
-    except Article.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'GET':
-        serializer = ArticleSerializer(article)
-        return Response(serializer.data)
-
-    elif request.method == 'PUT':
-        serializer = ArticleSerializer(article, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    elif request.method == 'DELETE':
         article.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 

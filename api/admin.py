@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Article, ContactForm
+from .models import Article, ContactForm, Like
 
 # Register your models here.
 
@@ -9,6 +9,11 @@ from .models import Article, ContactForm
 class ArticleModel(admin.ModelAdmin):
     list_filter = ('title', 'description')
     list_display = ('title', 'description')
+
+@admin.register(Like)
+class LikeModel(admin.ModelAdmin):
+    list_filter = ('title', 'who_liked')
+    list_display = ('title', 'count')
 
 @admin.register(ContactForm)
 class ContactFormModel(admin.ModelAdmin):

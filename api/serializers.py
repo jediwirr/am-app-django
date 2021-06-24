@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Article, ContactForm
+from .models import Article, ContactForm, Like
 from django.contrib.auth.models import User
 from rest_framework.authtoken.views import Token
 from django.core.mail import send_mail
@@ -8,8 +8,13 @@ from django.core.mail import send_mail
 class ArticleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Article
-        fields = ['id', 'title', 'image', 'imgPath', 'description', 'content']
+        fields = ['id', 'title', 'image', 'imgPath', 'description', 'content', 'likes']
 
+
+class LikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Like
+        fields = ['title', 'count', 'who_liked']
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
