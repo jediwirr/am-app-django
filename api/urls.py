@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import LikeViewset, UserViewset, article_details, send_email, article_list
+from .views import LikeViewset, UserViewset, article_details, send_email, article_list, user_details
 from rest_framework.routers import DefaultRouter
 from rest_framework.authtoken import views
 
@@ -16,7 +16,8 @@ urlpatterns = [
     path('api/tokens/', views.obtain_auth_token),
     path('api/emails/', send_email),
     path('api/articles/', article_list),
-    path('api/articles/<int:pk>/', article_details)
+    path('api/articles/<str:title>/', article_details),
+    path('api/users/profile/<str:username>/', user_details)
 
 #    url(r'api/', include('api.urls')),
 

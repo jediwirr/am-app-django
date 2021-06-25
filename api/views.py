@@ -11,7 +11,7 @@ from rest_framework import generics, mixins, viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.models import User
-from django.core.mail import EmailMessage, send_mail
+from django.core.mail import send_mail
 # Create your views here.
 
 
@@ -42,9 +42,9 @@ def article_list(request):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
-def article_details(request, pk):
+def article_details(request, title):
     try:
-        article = Article.objects.get(pk=pk)
+        article = Article.objects.get(title=title)
 
     except Article.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
@@ -69,6 +69,29 @@ class UserViewset(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def user_details(request, username):
+    try:
+        user = User.objects.get(username=username)
+
+    except User.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = UserSerializer(user, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class LikeViewset(viewsets.ModelViewSet):
     queryset = Like.objects.all()
