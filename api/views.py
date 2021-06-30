@@ -93,9 +93,27 @@ def user_details(request, username):
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
 class LikeViewset(viewsets.ModelViewSet):
     queryset = Like.objects.all()
     serializer_class = LikeSerializer
+
+
+@api_view(['GET', 'DELETE'])
+def like_details(request, count):
+    try:
+        like = Like.objects.get(count=count)
+
+    except User.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = LikeSerializer(like)
+        return Response(serializer.data)
+
+    elif request.method == 'DELETE':
+        like.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 '''
 class ContactFormViewset(viewsets.ModelViewSet):

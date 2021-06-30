@@ -8,8 +8,7 @@ from django.core.mail import send_mail
 class ArticleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Article
-        fields = ['id', 'title', 'image', 'imgPath', 'description', 'content', 'likes']
-
+        fields = ['id', 'title', 'image', 'imgPath', 'description', 'content', 'likes', 'published']
 
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:
