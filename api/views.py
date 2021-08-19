@@ -1,6 +1,6 @@
 from django.shortcuts import render, HttpResponse
-from .models import Article, ContactForm, Like
-from .serializers import ArticleSerializer, LikeSerializer, UserSerializer, ContactFormSerializer
+from .models import Article, ContactForm, Like, Comment
+from .serializers import ArticleSerializer, LikeSerializer, UserSerializer, ContactFormSerializer, CommentSerializer
 from django.http import JsonResponse
 from rest_framework.parsers import JSONParser
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
@@ -42,9 +42,9 @@ def article_list(request):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
-def article_details(request, title):
+def article_details(request, pk):
     try:
-        article = Article.objects.get(title=title)
+        article = Article.objects.get(pk=pk)
 
     except Article.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
@@ -104,7 +104,7 @@ def like_details(request, count):
     try:
         like = Like.objects.get(count=count)
 
-    except User.DoesNotExist:
+    except Like.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
@@ -113,6 +113,28 @@ def like_details(request, count):
 
     elif request.method == 'DELETE':
         like.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class CommentViewset(viewsets.ModelViewSet):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+
+
+@api_view(['GET', 'DELETE'])
+def comment_details(request, count):
+    try:
+        comment = Comment.objects.get(count=count)
+
+    except Comment.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = CommentSerializer(comment)
+        return Response(serializer.data)
+
+    elif request.method == 'DELETE':
+        comment.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 '''
