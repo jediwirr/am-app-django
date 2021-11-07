@@ -1,0 +1,7 @@
+django
+djangorestframework
+markdown
+django-filter
+pillow
+pip install exponent_server_sdk
+rollbar

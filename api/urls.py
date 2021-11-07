@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import UserViewset, LikeViewset, CommentViewset, article_details, like_details, send_email, article_list, user_details, comment_details
+from .views import Categories, ArticleDetails, Articles, UserViewset, LikeViewset, CommentViewset, article_details, like_details, send_email, article_list, user_details, comment_details
 from rest_framework.routers import DefaultRouter
 from rest_framework.authtoken import views
 
@@ -20,24 +20,8 @@ urlpatterns = [
     path('api/articles/<int:pk>/', article_details),
     path('api/users/profile/<str:username>/', user_details),
     path('api/likes/like/<str:count>/', like_details),
-    path('api/comments/comment/<str:count>/', comment_details)
-
-#    url(r'api/', include('api.urls')),
-
-    # url(r'^auth/login/$',
-    #    obtain_auth_token,
-    #    name='auth_user_login'),
-    # url(r'^auth/register/$',
-    #    CreateUserAPIView.as_view(),
-    #    name='auth_user_create'),
-    # url(r'^auth/logout/$',
-    #    LogoutUserAPIView.as_view(),
-    #    name='auth_user_logout')
-
-    # path('articles/', ArticleList.as_view()),
-    # path('articles/<int:pk>/', ArticleDetails.as_view()),
-
-    # path('articles/', article_list),
-    # path('articles/<int:pk>/', article_details),
-
+    path('api/comments/comment/<str:count>/', comment_details),
+    path('categories/', Categories.as_view(), name='categories'),
+    path('articles/', Articles.as_view(), name='articles'),
+    path('articles/<int:pk>/', ArticleDetails.as_view(), name='article'),
 ]

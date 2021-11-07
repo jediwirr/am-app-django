@@ -1,4 +1,4 @@
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render, HttpResponse, get_object_or_404
 from .models import Article, ContactForm, Like, Comment
 from .serializers import ArticleSerializer, LikeSerializer, UserSerializer, ContactFormSerializer, CommentSerializer
 from django.http import JsonResponse
@@ -12,20 +12,19 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
-# Create your views here.
-
-
-# class ArticleViewSet(viewsets.ModelViewSet):
-#     queryset = Article.objects.all()
-#     serializer_class = ArticleSerializer
-    # permission_classes = [IsAuthenticated]
-    # authentication_classes = (TokenAuthentication,)
-    
+from .notifications import send_push_message
+from rest_framework.renderers import TemplateHTMLRenderer, StaticHTMLRenderer
+from rest_framework.views import APIView
+import requests
 
 @api_view(['GET', 'POST'])
 # @authentication_classes([TokenAuthentication])
 # @permission_classes([IsAuthenticated])
 def article_list(request):
+    uri = 'https://exp.host/--/api/v2/push/send'
+    token = 'ExponentPushToken[9NU5RiH1dO7LyVWewfEfqk]'
+    title = request.POST.get('title', '')
+    body = request.POST.get('description', '')
 
     if request.method == 'GET':
         articles = Article.objects.all()
@@ -36,9 +35,44 @@ def article_list(request):
         serializer = ArticleSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+            requests.post(uri, data = {"to": token, "title": title, "body": body})
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+class Categories(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'cats.html'
+
+    def get(self, request):
+        queryset = Article.objects.all()
+        return Response({'articles': queryset})
+
+
+class Articles(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'articles.html'
+
+    def get(self, request):
+        queryset = Article.objects.all()
+        return Response({'articles': queryset})
+
+    def post(self, request):
+        serializer = ArticleSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({'serializer': serializer})
+        serializer.save()
+        return redirect('articles')
+
+
+class ArticleDetails(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'article.html'
+
+    def get(self, request, pk):
+        article = get_object_or_404(Article, pk=pk)
+        serializer = ArticleSerializer(article)
+        return Response({'serializer': serializer, 'article': article})
 
 
 @api_view(['GET', 'PUT', 'DELETE'])

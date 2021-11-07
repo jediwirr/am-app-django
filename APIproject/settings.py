@@ -25,9 +25,9 @@ SECRET_KEY = 'django-insecure-33saik*5ol@#^u)*a#2x3queh=4j3=t4ts6nb=ane^c3545r3g
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.100.249', '192.168.0.88', '192.168.0.115']
+ALLOWED_HOSTS = ['127.0.0.1', '192.168.100.249', '192.168.0.88', '192.168.0.115', '192.168.157.249']
 
-# python manage.py runserver 192.168.100.249:80
+# python manage.py runserver 192.168.0.88:80
 # Application definition
 
 INSTALLED_APPS = [
@@ -50,7 +50,16 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'rollbar.contrib.django.middleware.RollbarNotifierMiddleware',
 ]
+
+# ROLLBAR = {
+#     'access_token': 'f0e04144d8874f298fd234890d64d5f1',
+#     'environment': 'development' if DEBUG else 'production',
+#     'root': BASE_DIR,
+# }
+# import rollbar
+# rollbar.init(**ROLLBAR)
 
 ROOT_URLCONF = 'APIproject.urls'
 

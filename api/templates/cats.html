@@ -1,0 +1,8 @@
+<html><body>
+    <h1>Categories</h1>
+    <ul>
+        {% for article in articles %}
+        <li><a href="http://192.168.0.88/articles/{{ article.category }}/">{{ article.category }}</a></li>
+        {% endfor %}
+    </ul>
+    </body></html>

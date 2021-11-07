@@ -1,0 +1,12 @@
+{% load rest_framework %}
+
+<html><body>
+    <h1>Articles</h1>
+
+
+    <ul>
+        {% for article in articles %}
+        <li><a href="http://192.168.0.88/articles/{{ article.id }}/">{{ article.title }}</a></li>
+        {% endfor %}
+    </ul>
+    </body></html>
